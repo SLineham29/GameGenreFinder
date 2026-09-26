@@ -5,6 +5,4 @@
 
     <livewire:igdb-auth/>
 
-@livewireScripts
-@fluxScripts()
 </body>

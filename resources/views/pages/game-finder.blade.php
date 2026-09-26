@@ -32,21 +32,20 @@ new class extends Component
 
         $this->games = $client->getGames([$this->genre1, $this->genre2, $this->genre3], $this->platform);
 
-        $this->randomGame = Arr::random($this->games);
-
-        error_log(print_r($this->randomGame, true));
-
+        if(count($this->games) > 0) {
+            $this->randomGame = Arr::random($this->games);
+        }
         $this->gameFound = true;
     }
 };
 ?>
 
-<flux:main class="mx-auto space-y-6 max-w-2xl">
+<flux:main class="mx-auto space-y-5">
 
-    <flux:header size="xl">Game Genre Finder</flux:header>
+    <flux:heading size="xl" class="text-center font-bold">Game Genre Finder</flux:heading>
 
-    <form class="space-y-2" wire:submit="lookForGames">
-        <div>
+    <form class="space-y-6" wire:submit="lookForGames">
+        <div class="grid gap-5 grid-cols-3">
             <flux:select wire:model="genre1" label="Genre 1" placeholder="Choose genre...">
                 <flux:select.option/>
                 @forEach($genres as $genre)
@@ -80,11 +79,13 @@ new class extends Component
     @if($gameFound)
         @if($randomGame)
             <div>
-                <flux:heading>You may enjoy playing:</flux:heading>
-                <flux:card>
-                    <flux:heading>{{ $randomGame['name'] }}</flux:heading>
-                    <img src="{{ substr($randomGame['cover'], 0) }}" alt="{{ $randomGame['name'] }} cover image">
-                    <flux:text>{{$randomGame['summary']}}</flux:text>
+                <flux:heading class="mb-4">You may enjoy playing:</flux:heading>
+                <flux:card class="space-y-3 gap-6">
+                    <flux:heading size="xl" class="text-center">{{ $randomGame['name'] }}</flux:heading>
+                    <img src="{{ $randomGame['cover'] }}" alt="{{ $randomGame['name'] }} cover image"
+                         class="mx-auto h-64 w-44 shrink-0 rounded-lg"
+                    >
+                    <flux:text class="text-justify">{{$randomGame['summary']}}</flux:text>
                     <flux:text>Developer: {{$randomGame['developer']}}</flux:text>
                     <flux:text>Release Date: {{ date("d-m-Y", $randomGame['releaseDate']) }}</flux:text>
                     <flux:text>Available Platforms: {{ $randomGame['platforms'] }}</flux:text>
