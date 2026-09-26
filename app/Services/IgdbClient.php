@@ -53,4 +53,37 @@ class IgdbClient
                 ->json();
         });
     }
+
+    public function getGames(array $genreIds, int $platformId): array
+    {
+        $genres = array_values(array_unique(array_filter($genreIds)));
+        $genreList = implode(',', $genres);
+
+        $games =  Http::withHeaders([
+            'Client-ID' => config('services.igdb.client_id'),
+            'Authorization' => 'Bearer ' . $this->getOAuth(),
+        ])
+            ->withBody("fields name,cover.url,platforms.name,involved_companies.company.name,involved_companies.developer,first_release_date,summary; where platforms=({$platformId}) & genres=({$genreList}); limit 500;"
+                        , 'text/plain')
+            ->post("{$this->apiUrl}/games")
+            ->throw()
+            ->json();
+
+        return collect($games)
+            ->map(function (array $game) {
+
+                // Need to find which involved company is the actual developer of the game.
+                $developer = collect($game['involved_companies'] ?? [])
+                    ->firstWhere('developer', true)['company']['name'] ?? 'Unknown Developer';
+
+                return [
+                    'name' => $game['name'] ?? 'Unknown Name',
+                    'cover' => $game['cover']['url'] ?? "",
+                    'release_date' => $game['first_release_date'] ?? '',
+                    'summary' => $game['summary'] ?? 'No summary provided.',
+                    'platforms' => $game['platforms'] ?? 'Unknown Platforms',
+                    'developer' => $developer,
+                ];
+            })->all();
+    }
 }
