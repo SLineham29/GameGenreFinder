@@ -75,13 +75,16 @@ class IgdbClient
                 // Need to find which involved company is the actual developer of the game.
                 $developer = collect($game['involved_companies'] ?? [])
                     ->firstWhere('developer', true)['company']['name'] ?? 'Unknown Developer';
+                $platforms = array_column($game['platforms'], 'name');
+                // Need to replace the default URL for the small thumbnail with the preset with a higher res.
+                $coverUrl = str_replace('t_thumb', 't_cover_big_2x', $game['cover']['url'] ?? '');
 
                 return [
                     'name' => $game['name'] ?? 'Unknown Name',
-                    'cover' => $game['cover']['url'] ?? "",
-                    'release_date' => $game['first_release_date'] ?? '',
+                    'cover' => $coverUrl,
+                    'releaseDate' => $game['first_release_date'] ?? '',
                     'summary' => $game['summary'] ?? 'No summary provided.',
-                    'platforms' => $game['platforms'] ?? 'Unknown Platforms',
+                    'platforms' => implode(', ', $platforms) ?? 'Unknown Platforms',
                     'developer' => $developer,
                 ];
             })->all();
