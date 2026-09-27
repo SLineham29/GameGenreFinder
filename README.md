@@ -9,6 +9,9 @@ popularity over the years then it's hard to find details and discussions on game
 This web app uses the [IGDB API](https://www.igdb.com/api) to get a list of every available genre and platform,
 then allow the user to filter through both to find a game that they might enjoy looking further into and playing.
 
+<img width="100%" height="auto" alt="Screenshot of the home page with a chosen game." src="https://github.com/user-attachments/assets/9079f4bb-a962-4ba1-944e-6fefe64086b8" />
+
+
 ## How to Run
 
 1) Clone this repository.
