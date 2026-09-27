@@ -9,9 +9,9 @@ class IgdbClient
 {
     private string $apiUrl = 'https://api.igdb.com/v4';
 
-    public function getOAuth(): String
+    public function getOAuth(): string
     {
-        if($accessToken = Cache::get('igdb_access_token')) {
+        if ($accessToken = Cache::get('igdb_access_token')) {
             return $accessToken;
         }
 
@@ -31,12 +31,12 @@ class IgdbClient
         return Cache::remember('igdb_genres', now()->addDay(), function () {
             return Http::withHeaders([
                 'Client-ID' => config('services.igdb.client_id'),
-                'Authorization' => 'Bearer ' . $this->getOAuth(),
+                'Authorization' => 'Bearer '.$this->getOAuth(),
             ])
-            ->withBody('fields id,name; sort name asc; limit 500;', 'text/plain')
-            ->post("{$this->apiUrl}/genres")
-            ->throw()
-            ->json();
+                ->withBody('fields id,name; sort name asc; limit 500;', 'text/plain')
+                ->post("{$this->apiUrl}/genres")
+                ->throw()
+                ->json();
         });
     }
 
@@ -45,7 +45,7 @@ class IgdbClient
         return Cache::remember('igdb_platforms', now()->addDay(), function () {
             return Http::withHeaders([
                 'Client-ID' => config('services.igdb.client_id'),
-                'Authorization' => 'Bearer ' . $this->getOAuth(),
+                'Authorization' => 'Bearer '.$this->getOAuth(),
             ])
                 ->withBody('fields id,name; sort name asc; limit 500;', 'text/plain')
                 ->post("{$this->apiUrl}/platforms")
@@ -59,12 +59,11 @@ class IgdbClient
         $genres = array_values(array_unique(array_filter($genreIds)));
         $genreList = implode(',', $genres);
 
-        $games =  Http::withHeaders([
+        $games = Http::withHeaders([
             'Client-ID' => config('services.igdb.client_id'),
-            'Authorization' => 'Bearer ' . $this->getOAuth(),
+            'Authorization' => 'Bearer '.$this->getOAuth(),
         ])
-            ->withBody("fields name,cover.url,platforms.name,involved_companies.company.name,involved_companies.developer,first_release_date,summary; where platforms=({$platformId}) & genres=({$genreList}); limit 500;"
-                        , 'text/plain')
+            ->withBody("fields name,cover.url,platforms.name,involved_companies.company.name,involved_companies.developer,first_release_date,summary; where platforms=({$platformId}) & genres=({$genreList}); limit 100;", 'text/plain')
             ->post("{$this->apiUrl}/games")
             ->throw()
             ->json();
@@ -75,14 +74,14 @@ class IgdbClient
                 // Need to find which involved company is the actual developer of the game.
                 $developer = collect($game['involved_companies'] ?? [])
                     ->firstWhere('developer', true)['company']['name'] ?? 'Unknown Developer';
-                $platforms = array_column($game['platforms'], 'name');
+                $platforms = array_column($game['platforms'] ?? [], 'name');
                 // Need to replace the default URL for the small thumbnail with the preset with a higher res.
                 $coverUrl = str_replace('t_thumb', 't_cover_big_2x', $game['cover']['url'] ?? '');
 
                 return [
                     'name' => $game['name'] ?? 'Unknown Name',
                     'cover' => $coverUrl,
-                    'releaseDate' => $game['first_release_date'] ?? '',
+                    'releaseDate' => isset($game['first_release_date']) ? date('d-m-Y', $game['first_release_date']) : 'Unknown Release Date',
                     'summary' => $game['summary'] ?? 'No summary provided.',
                     'platforms' => implode(', ', $platforms) ?? 'Unknown Platforms',
                     'developer' => $developer,

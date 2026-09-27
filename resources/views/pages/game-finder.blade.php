@@ -85,9 +85,9 @@ new class extends Component
                     <img src="{{ $randomGame['cover'] }}" alt="{{ $randomGame['name'] }} cover image"
                          class="mx-auto h-64 w-44 shrink-0 rounded-lg"
                     >
-                    <flux:text class="text-justify">{{$randomGame['summary']}}</flux:text>
-                    <flux:text>Developer: {{$randomGame['developer']}}</flux:text>
-                    <flux:text>Release Date: {{ date("d-m-Y", $randomGame['releaseDate']) }}</flux:text>
+                    <flux:text class="text-justify">{{ $randomGame['summary'] }}</flux:text>
+                    <flux:text>Developer: {{ $randomGame['developer'] }}</flux:text>
+                    <flux:text>Release Date: {{ $randomGame['releaseDate'] }}</flux:text>
                     <flux:text>Available Platforms: {{ $randomGame['platforms'] }}</flux:text>
                 </flux:card>
             </div>
