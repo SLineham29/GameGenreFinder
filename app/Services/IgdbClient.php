@@ -83,7 +83,7 @@ class IgdbClient
                     'cover' => $coverUrl,
                     'releaseDate' => isset($game['first_release_date']) ? date('d-m-Y', $game['first_release_date']) : 'Unknown Release Date',
                     'summary' => $game['summary'] ?? 'No summary provided.',
-                    'platforms' => implode(', ', $platforms) ?? 'Unknown Platforms',
+                    'platforms' => implode(', ', $platforms),
                     'developer' => $developer,
                 ];
             })->all();
